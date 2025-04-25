@@ -1,11 +1,8 @@
 package co.edu.uniquindio.parcial_2.program_ii.factory;
 
-import co.edu.uniquindio.parcial_2.program_ii.mapping.dto.ClienteDto;
-import co.edu.uniquindio.parcial_2.program_ii.mapping.mappers.PrestamoMappingImpl;
 import co.edu.uniquindio.parcial_2.program_ii.model.Cliente;
 import co.edu.uniquindio.parcial_2.program_ii.model.PrestamoObjeto;
 import co.edu.uniquindio.parcial_2.program_ii.service.IModelFactoryService;
-import co.edu.uniquindio.parcial_2.program_ii.service.IPrestamoMapping;
 import co.edu.uniquindio.parcial_2.program_ii.utils.DataUtil;
 
 import java.util.List;
@@ -13,7 +10,6 @@ import java.util.List;
 public class ModelFactory implements IModelFactoryService {
     private static ModelFactory modelFactory;
     private PrestamoObjeto prestamoObjeto;
-    private IPrestamoMapping mapper;
 
     public static ModelFactory getInstancia() {
         if(modelFactory == null) {
@@ -23,21 +19,18 @@ public class ModelFactory implements IModelFactoryService {
     }
 
     private ModelFactory(){
-        mapper = new PrestamoMappingImpl();
         prestamoObjeto = DataUtil.inicializarDatos();
     }
 
 
     @Override
-    public List<ClienteDto> obtenerClientes() {
-        return mapper.getClientesDto(prestamoObjeto.getListaClientes());
+    public List<Cliente> obtenerClientes() {
+        return prestamoObjeto.getListaClientes();
     }
 
     @Override
-    public boolean agregarCliente(ClienteDto clienteDto) {
-        Cliente cliente = mapper.clienteDtoToCliente(clienteDto);
+    public boolean agregarCliente(Cliente cliente) {
         return prestamoObjeto.crearCliente(cliente);
-        //return prestamoObjeto.crearCliente(mapper.clienteDtoToCliente(clienteDto));
     }
 
     @Override

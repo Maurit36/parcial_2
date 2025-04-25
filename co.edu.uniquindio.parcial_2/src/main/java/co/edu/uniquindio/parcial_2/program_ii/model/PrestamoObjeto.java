@@ -48,6 +48,7 @@ public class PrestamoObjeto {
 
 
     private Cliente getBuildCliente(String cedula, String nombre, String apellido, String email, String telefonoFijo, String telefonoCelular, String direccion) {
+
         return Cliente.builder()
                 .nombre(nombre)
                 .apellido(apellido)

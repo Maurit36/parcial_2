@@ -1,7 +1,7 @@
 package co.edu.uniquindio.parcial_2.program_ii.controller;
 
 import co.edu.uniquindio.parcial_2.program_ii.factory.ModelFactory;
-import co.edu.uniquindio.parcial_2.program_ii.mapping.dto.ClienteDto;
+import co.edu.uniquindio.parcial_2.program_ii.model.Cliente;
 
 import java.util.List;
 
@@ -11,12 +11,12 @@ public class ClienteController {
         modelFactory = ModelFactory.getInstancia();
     }
 
-    public List<ClienteDto> obtenerClientes() {
+    public List<Cliente> obtenerClientes() {
         return modelFactory.obtenerClientes();
     }
 
-    public boolean agregarCliente(ClienteDto clienteDto) {
-        return modelFactory.agregarCliente(clienteDto);
+    public boolean agregarCliente(Cliente cliente) {
+        return modelFactory.agregarCliente(cliente);
     }
 
     public boolean eliminarCliente(String cedula) {

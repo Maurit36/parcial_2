@@ -5,7 +5,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import co.edu.uniquindio.parcial_2.program_ii.controller.ClienteController;
-import co.edu.uniquindio.parcial_2.program_ii.mapping.dto.ClienteDto;
+import co.edu.uniquindio.parcial_2.program_ii.factory.ModelFactory;
+import co.edu.uniquindio.parcial_2.program_ii.model.Cliente;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,9 +20,9 @@ import static co.edu.uniquindio.parcial_2.program_ii.utils.PrestamoConstantes.*;
 public class ClienteViewController {
 
 
-    ClienteController clienteController;
-    ObservableList<ClienteDto> listaClientes = FXCollections.observableArrayList();
-    ClienteDto clienteSeleccionado;
+    ModelFactory modelFactory = ModelFactory.getInstancia();
+    ObservableList<Cliente> listaClientes = FXCollections.observableArrayList();
+    Cliente clienteSeleccionado;
 
 
     @FXML
@@ -43,22 +44,22 @@ public class ClienteViewController {
     private Button btnNuevo;
 
     @FXML
-    private TableView<ClienteDto> tableCliente;
+    private TableView<Cliente> tableCliente;
 
     @FXML
-    private TableColumn<ClienteDto, String> tcApellido;
+    private TableColumn<Cliente, String> tcApellido;
 
     @FXML
-    private TableColumn<ClienteDto, String> tcCedula;
+    private TableColumn<Cliente, String> tcCedula;
 
     @FXML
-    private TableColumn<ClienteDto, String> tcDireccion;
+    private TableColumn<Cliente, String> tcDireccion;
 
     @FXML
-    private TableColumn<ClienteDto, String> tcEmail;
+    private TableColumn<Cliente, String> tcEmail;
 
     @FXML
-    private TableColumn<ClienteDto, String> tcNombre;
+    private TableColumn<Cliente, String> tcNombre;
 
     @FXML
     private TextField txtApellido;
@@ -78,7 +79,6 @@ public class ClienteViewController {
 
     @FXML
     void initialize() {
-        clienteController = new ClienteController();
         initView();
     }
 
@@ -112,15 +112,15 @@ public class ClienteViewController {
     }
 
     private void obtenerClientes() {
-       listaClientes.addAll(clienteController.obtenerClientes());
+       listaClientes.addAll(modelFactory.obtenerClientes());
     }
 
     private void initDataBinding() {
-        tcNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nombre()));
-        tcApellido.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().apellido()));
-        tcCedula.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().cedula()));
-        tcEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().email()));
-        tcDireccion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().direccion()));
+        tcNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
+        tcApellido.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getApellido()));
+        tcCedula.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCedula()));
+        tcEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
+        tcDireccion.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDireccion()));
     }
 
     private void listenerSelection() {
@@ -133,11 +133,11 @@ public class ClienteViewController {
     private void agregarCliente() {
         //1. Captura los datos del formulario
         //2. Armar un Dto con los datos
-        ClienteDto clienteDto = crearClienteDto();
+        Cliente clienteDto = crearClienteDto();
         //3.Validar campos
         if(datosValidos(clienteDto)){
             //4. Solicitar crear cliente
-            if(clienteController.agregarCliente(clienteDto)){
+            if(modelFactory.agregarCliente(clienteDto)){
                 listaClientes.addAll(clienteDto);
                 limpiarCampos();
                 mostrarMensaje(TITULO_CLIENTE_AGREGADO, HEADER, BODY_CLIENTE_AGREGADO,Alert.AlertType.INFORMATION);
@@ -152,7 +152,7 @@ public class ClienteViewController {
 
     private void eliminarCliente() {
         if(clienteSeleccionado != null){
-            if(clienteController.eliminarCliente(clienteSeleccionado.cedula())){
+            if(modelFactory.eliminarCliente(clienteSeleccionado.getCedula())){
                 listaClientes.remove(clienteSeleccionado);
                 limpiarCampos();
                 mostrarMensaje(TITULO_CLIENTE_ELIMINADO, HEADER, BODY_CLIENTE_AGREGADO,Alert.AlertType.INFORMATION);
@@ -176,21 +176,24 @@ public class ClienteViewController {
         txtdireccion.setText("");
     }
 
-    private ClienteDto crearClienteDto() {
-        return new ClienteDto(
+    private Cliente crearClienteDto() {
+        return new Cliente(
+                txtCedula.getText(),
                 txtNombre.getText(),
                 txtApellido.getText(),
-                txtCedula.getText(),
                 txtEmail.getText(),
-                txtdireccion.getText());
+                "",
+                "",
+                txtdireccion.getText(),
+                0);
     }
 
-    private boolean datosValidos(ClienteDto clienteDto) {
-        if(clienteDto.nombre().isBlank() ||
-           clienteDto.apellido().isBlank() ||
-           clienteDto.cedula().isBlank() ||
-           clienteDto.email().isBlank() ||
-           clienteDto.direccion().isBlank()
+    private boolean datosValidos(Cliente cliente) {
+        if(cliente.getNombre().isBlank() ||
+                cliente.getApellido().isBlank() ||
+                cliente.getCedula().isBlank() ||
+                cliente.getEmail().isBlank() ||
+                cliente.getDireccion().isBlank()
         ){
             return false;
         }else{
@@ -199,13 +202,13 @@ public class ClienteViewController {
     }
 
 
-    private void mostrarInformacionCliente(ClienteDto clienteSeleccionado) {
+    private void mostrarInformacionCliente(Cliente clienteSeleccionado) {
         if(clienteSeleccionado != null){
-            txtNombre.setText(clienteSeleccionado.nombre());
-            txtApellido.setText(clienteSeleccionado.apellido());
-            txtCedula.setText(clienteSeleccionado.cedula());
-            txtEmail.setText(clienteSeleccionado.email());
-            txtdireccion.setText(clienteSeleccionado.direccion());
+            txtNombre.setText(clienteSeleccionado.getNombre());
+            txtApellido.setText(clienteSeleccionado.getApellido());
+            txtCedula.setText(clienteSeleccionado.getCedula());
+            txtEmail.setText(clienteSeleccionado.getEmail());
+            txtdireccion.setText(clienteSeleccionado.getDireccion());
         }
     }
 
