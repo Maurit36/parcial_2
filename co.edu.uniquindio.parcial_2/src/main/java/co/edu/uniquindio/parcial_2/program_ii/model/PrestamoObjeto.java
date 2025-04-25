@@ -24,27 +24,26 @@ public class PrestamoObjeto {
                                 String email,
                                 String telefonoFijo,
                                 String telefonoCelular,
-                                String direccion){
+                                String direccion) {
         Cliente clienteEncontrado = obtenerCliente(cedula);
-        if(clienteEncontrado == null){
+        if (clienteEncontrado == null) {
             Cliente cliente = getBuildCliente(cedula, nombre, apellido, email, telefonoFijo, telefonoCelular, direccion);
             getListaClientes().add(cliente);
             return true;
-        }else{
-            return  false;
+        } else {
+            return false;
         }
     }
 
-    public boolean crearCliente(Cliente nuevoCliente){
+    public boolean crearCliente(Cliente nuevoCliente) {
         Cliente clienteEncontrado = obtenerCliente(nuevoCliente.getCedula());
-        if(clienteEncontrado == null){
+        if (clienteEncontrado == null) {
             getListaClientes().add(nuevoCliente);
             return true;
-        }else{
-            return  false;
+        } else {
+            return false;
         }
     }
-
 
 
     private Cliente getBuildCliente(String cedula, String nombre, String apellido, String email, String telefonoFijo, String telefonoCelular, String direccion) {
@@ -61,8 +60,8 @@ public class PrestamoObjeto {
 
     private Cliente obtenerCliente(String cedula) {
         Cliente cliente = null;
-        for (Cliente cliente1: getListaClientes()) {
-            if(cliente1.getCedula().equalsIgnoreCase(cedula)){
+        for (Cliente cliente1 : getListaClientes()) {
+            if (cliente1.getCedula().equalsIgnoreCase(cedula)) {
                 cliente = cliente1;
                 break;
             }
@@ -91,9 +90,9 @@ public class PrestamoObjeto {
     public String obtenerClientesPorCiudad(String ciudad) {
         String resultado = "";
 
-        for (Cliente cliente: getListaClientes()) {
-            if(cliente.getDireccion().equalsIgnoreCase(ciudad)){
-                resultado = resultado + cliente.toString()+ "\n";
+        for (Cliente cliente : getListaClientes()) {
+            if (cliente.getDireccion().equalsIgnoreCase(ciudad)) {
+                resultado = resultado + cliente.toString() + "\n";
             }
         }
 
@@ -102,11 +101,42 @@ public class PrestamoObjeto {
 
     public boolean eliminarCliente(String cedula) {
         Cliente clienteEncontrado = obtenerCliente(cedula);
-        if(clienteEncontrado !=null){
+        if (clienteEncontrado != null) {
             getListaClientes().remove(clienteEncontrado);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
+    public List<Prestamo> getListaPrestamos() {
+        return listaPrestamos;
+    }
+
+    public List<Empleado> getListaEmpleados() {
+        return listaEmpleados;
+    }
+
+    public void setListaEmpleados(List<Empleado> listaEmpleados) {
+        this.listaEmpleados = listaEmpleados;
+    }
+
+    public boolean realizarPrestamo(Empleado empleado, Objeto objeto) {
+        if (objeto.prestar()) {
+            empleado.incrementarPrestamos();
+            return true;
+        }
+        return false;
+    }
+
+    public List<Objeto> obtenerObjetoMasPrestado(int minimoPrestamos) {
+        List<Objeto> objetosPrestados = new ArrayList<>();
+        for (Objeto objeto : listaObjetos) {
+            if (objeto.getVecesPrestado() > minimoPrestamos) {
+                objetosPrestados.add(objeto);
+            }
+        }
+        return objetosPrestados;
+    }
 }
+
